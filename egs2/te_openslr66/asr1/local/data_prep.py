@@ -4,10 +4,10 @@ import random
 import re
 
 
-def preprocess(sen):
-    val = re.sub(r'\n', '', sen.strip())
-    val4 = re.sub('[.,\/#!$%\^&\*;:{}=\-_`~()]', '', val)
-    return val4.strip()
+def preprocess(text):
+    text = re.sub(r'\n', '', text.strip())
+    text = re.sub('[.,\/#!$%\^&\*;:{}=\-_`~()]', '', text)
+    return text.strip()
 
 
 if __name__ == "__main__":
