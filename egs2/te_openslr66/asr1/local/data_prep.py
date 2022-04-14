@@ -26,9 +26,9 @@ if __name__ == "__main__":
     for line in tsv_lines:
         l_list = line.split("\t")
         fid = l_list[0]
-        spk = l_list[1]
-        text = l_list[2]
-        path = "%s/data/%s/%s.flac" % (args.d, fid[:2], fid)
+        spk = l_list[0].split('_')[1]
+        text = l_list[1]
+        path = "%s/%s.wav" % (args.d, fid)
         if os.path.exists(path):
             utt2text[fid] = text
             if spk in spk2utt:
@@ -43,8 +43,9 @@ if __name__ == "__main__":
         num_test_spks += 1
         fids = sorted(list(set(spk2utt[spk])))
         num_fids += len(fids)
-        if num_fids >= 2000:
+        if num_fids >= 500:
             break
+
     test_spks = spks[:num_test_spks]
     train_dev_spks = spks[num_test_spks:]
     random.Random(0).shuffle(train_dev_spks)
