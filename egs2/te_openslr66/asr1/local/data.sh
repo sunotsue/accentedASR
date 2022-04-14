@@ -46,21 +46,21 @@ if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
     rm te_in_female.zip
     rm te_in_male.zip
 
-    cat te_in_female/line_index.tsv te_in_male/line_index.tsv > te_index.tsv
+    cat line_index.tsv line_index.tsv > te_index.tsv
 
     cd $workspace
 fi
 
-#if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
-#    log "sub-stage 1: Preparing Data for openslr"
-#
-#    python3 local/data_prep.py -d ${TELUGU}
-#    utils/spk2utt_to_utt2spk.pl data/te_train/spk2utt > data/te_train/utt2spk
-#    utils/spk2utt_to_utt2spk.pl data/te_dev/spk2utt > data/te_dev/utt2spk
-#    utils/spk2utt_to_utt2spk.pl data/te_test/spk2utt > data/te_test/utt2spk
-#    utils/fix_data_dir.sh data/te_train
-#    utils/fix_data_dir.sh data/te_dev
-#    utils/fix_data_dir.sh data/te_test
-#fi
+if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
+    log "sub-stage 1: Preparing Data for openslr"
+
+    python3 local/data_prep.py -d ${TELUGU}
+    utils/spk2utt_to_utt2spk.pl data/te_train/spk2utt > data/te_train/utt2spk
+    utils/spk2utt_to_utt2spk.pl data/te_dev/spk2utt > data/te_dev/utt2spk
+    utils/spk2utt_to_utt2spk.pl data/te_test/spk2utt > data/te_test/utt2spk
+    utils/fix_data_dir.sh data/te_train
+    utils/fix_data_dir.sh data/te_dev
+    utils/fix_data_dir.sh data/te_test
+fi
 
 log "Successfully finished. [elapsed=${SECONDS}s]"
