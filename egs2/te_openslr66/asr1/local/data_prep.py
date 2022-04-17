@@ -54,7 +54,7 @@ if __name__ == "__main__":
     dev_spks = train_dev_spks[num_train:]
 
     spks_by_phase = {"train": train_spks, "dev": dev_spks, "test": test_spks}
-    flac_dir = "%s/data" % args.d
+    flac_dir = "%s/" % args.d
     sr = 16000
     for phase in spks_by_phase:
         spks = spks_by_phase[phase]
@@ -73,9 +73,8 @@ if __name__ == "__main__":
             utts_str = " ".join(utts)
             spk2utt_strs.append("%s %s" % (spk, utts_str))
             for fid, utt in zip(fids, utts):
-                cmd = "ffmpeg -i %s/%s/%s.flac -f wav -ar %d -ab 16 -ac 1 - |" % (
+                cmd = "ffmpeg -i %s/%s.wav -f wav -ar %d -ab 16 -ac 1 - |" % (
                     flac_dir,
-                    fid[:2],
                     fid,
                     sr,
                 )
