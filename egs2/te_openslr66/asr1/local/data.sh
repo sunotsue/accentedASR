@@ -12,6 +12,7 @@ stop_stage=1
 # inclusive, was 100
 SECONDS=0
 
+lang=te
 
 log() {
     local fname=${BASH_SOURCE[1]##*/}
@@ -29,38 +30,55 @@ set -o pipefail
 
 log "data preparation started"
 
-mkdir -p ${TELUGU}
-
 workspace=$PWD
 
-if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
-    log "sub-stage 0: Download Data to downloads"
+if [ ${lang} == "te" ]; then
+  mkdir -p ${TELUGU}
+  if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
+      log "sub-stage 0: Download Data to downloads"
 
-    cd ${TELUGU}
-    wget https://us.openslr.org/resources/66/te_in_female.zip
-    wget https://us.openslr.org/resources/66/te_in_male.zip
+      cd ${TELUGU}
+      wget https://us.openslr.org/resources/66/te_in_female.zip
+      wget https://us.openslr.org/resources/66/te_in_male.zip
 
-    unzip -o te_in_female.zip
-    unzip -o te_in_male.zip
+      unzip -o te_in_female.zip
+      unzip -o te_in_male.zip
 
-    rm te_in_female.zip
-    rm te_in_male.zip
+      rm te_in_female.zip
+      rm te_in_male.zip
 
-    cat line_index.tsv line_index.tsv > te_index.tsv
+      cat line_index.tsv line_index.tsv > te_index.tsv
 
-    cd $workspace
+      cd $workspace
+  fi
+else
+  mkdir -p ${ENGLISH}
+  if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
+      log "sub-stage 0: Download Data to downloads"
+
+      cd ${ENGLISH}
+      gdown 'https://drive.google.com/uc?id=1foS5QODqzaotn6KaSEEdaCynh-PAccOg'
+
+      unzip -o english_telugu.zip
+      cd $workspace
+  fi
+
 fi
 
 if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     log "sub-stage 1: Preparing Data for openslr"
 
-    python3 local/data_prep.py -d ${TELUGU}
-    utils/spk2utt_to_utt2spk.pl data/te_train/spk2utt > data/te_train/utt2spk
-    utils/spk2utt_to_utt2spk.pl data/te_dev/spk2utt > data/te_dev/utt2spk
-    utils/spk2utt_to_utt2spk.pl data/te_test/spk2utt > data/te_test/utt2spk
-    utils/fix_data_dir.sh data/te_train
-    utils/fix_data_dir.sh data/te_dev
-    utils/fix_data_dir.sh data/te_test
+    if [ ${lang} == "te" ]; then
+      python3 local/data_prep.py -d ${TELUGU}
+    else
+      python3 local/data_prep.py -d ${ENGLISH}
+    fi
+    utils/spk2utt_to_utt2spk.pl data/${lang}_train/spk2utt > data/${lang}_train/utt2spk
+    utils/spk2utt_to_utt2spk.pl data/${lang}_dev/spk2utt > data/${lang}_dev/utt2spk
+    utils/spk2utt_to_utt2spk.pl data/${lang}_test/spk2utt > data/${lang}_test/utt2spk
+    utils/fix_data_dir.sh data/${lang}_train
+    utils/fix_data_dir.sh data/${lang}_dev
+    utils/fix_data_dir.sh data/${lang}_test
 fi
 
 log "Successfully finished. [elapsed=${SECONDS}s]"
