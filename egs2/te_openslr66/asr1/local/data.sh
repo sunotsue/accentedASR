@@ -47,7 +47,7 @@ if [ ${lang} == "te" ]; then
       rm te_in_female.zip
       rm te_in_male.zip
 
-      cat line_index.tsv line_index.tsv > te_index.tsv
+      cat te_in_female/line_index.tsv te_in_male/line_index.tsv > te_index.tsv
 
       cd $workspace
   fi
