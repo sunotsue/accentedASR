@@ -23,9 +23,9 @@ if __name__ == "__main__":
                     text = re.sub('\.|,', '', text)
                     text = re.sub('\s+', ' ', text)
                     try:
-                        text_transliterated = transliterate_text(text, lang_code='te')
+                        text_transliterated = transliterate_text(text, lang_code='kn')
                     except:
-                        text_transliterated = transliterate(text, sanscript.ITRANS, sanscript.TELUGU)
+                        text_transliterated = transliterate(text, sanscript.ITRANS, sanscript.KANNADA)
 
                     f.write(fid + '\t' + text_transliterated + '\n')
 

@@ -12,7 +12,7 @@ stop_stage=1
 # inclusive, was 100
 SECONDS=0
 
-lang=te
+lang=kn
 
 log() {
     local fname=${BASH_SOURCE[1]##*/}
@@ -32,22 +32,22 @@ log "data preparation started"
 
 workspace=$PWD
 
-if [ ${lang} == "te" ]; then
-  mkdir -p ${TELUGU}
+if [ ${lang} == "kn" ]; then
+  mkdir -p ${KANNADA}
   if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
       log "sub-stage 0: Download Data to downloads"
 
-      cd ${TELUGU}
-      wget https://us.openslr.org/resources/66/te_in_female.zip
-      wget https://us.openslr.org/resources/66/te_in_male.zip
+     cd ${KANNADA}
+      wget https://us.openslr.org/resources/79/kn_in_female.zip
+      wget https://us.openslr.org/resources/79/kn_in_male.zip
 
-      unzip -o te_in_female.zip
-      unzip -o te_in_male.zip
+      unzip -o kn_in_female.zip
+      unzip -o kn_in_male.zip
 
-      rm te_in_female.zip
-      rm te_in_male.zip
+      rm kn_in_female.zip
+      rm kn_in_male.zip
 
-      cat te_in_female/line_index.tsv te_in_male/line_index.tsv > te_index.tsv
+      cat kn_in_female/line_index.tsv kn_in_male/line_index.tsv > kn_index.tsv
 
       cd $workspace
   fi
@@ -59,7 +59,7 @@ else
       cd ${ENGLISH}
       gdown 'https://drive.google.com/uc?id=1foS5QODqzaotn6KaSEEdaCynh-PAccOg'
 
-      unzip -o english_telugu.zip
+      unzip -o english_kannada.zip
       cd $workspace
   fi
 
@@ -68,8 +68,8 @@ fi
 if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     log "sub-stage 1: Preparing Data for openslr"
 
-    if [ ${lang} == "te" ]; then
-      python3 local/data_prep.py -d ${TELUGU}
+    if [ ${lang} == "kn" ]; then
+      python3 local/data_prep.py -d ${KANNADA}
     else
       python3 local/data_prep.py -d ${ENGLISH}
     fi
