@@ -41,13 +41,16 @@ if [ ${lang} == "ta" ]; then
       wget https://us.openslr.org/resources/65/ta_in_female.zip
       wget https://us.openslr.org/resources/65/ta_in_male.zip
 
+      wget https://www.openslr.org/resources/65/line_index_female.tsv 
+      wget https://www.openslr.org/resources/65/line_index_male.tsv
+
       unzip -o ta_in_female.zip
       unzip -o ta_in_male.zip
 
       rm ta_in_female.zip
       rm ta_in_male.zip
 
-      cat ta_in_female/line_index.tsv ta_in_male/line_index.tsv > ta_index.tsv
+      cat line_index_female.tsv line_index_male.tsv > ta_index.tsv
 
       cd $workspace
   fi
