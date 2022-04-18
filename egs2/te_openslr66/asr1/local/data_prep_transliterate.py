@@ -13,7 +13,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", help="downloads directory", type=str, default="downloads")
     args = parser.parse_args()
 
-    with open(os.path.join(os.environ['ENGLISH'], 'line_index.txt'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(os.environ['ENGLISH'], 'line_index.tsv'), 'w', encoding='utf-8') as f:
         for file in os.listdir(args.d):
             if file.endswith(".txt"):
                 path = os.path.join(args.d, file)
