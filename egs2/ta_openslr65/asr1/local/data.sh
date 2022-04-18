@@ -33,11 +33,11 @@ log "data preparation started"
 workspace=$PWD
 
 if [ ${lang} == "ta" ]; then
-  mkdir -p ${TAMIL}
+  mkdir -p data/ta
   if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
       log "sub-stage 0: Download Data to downloads"
 
-      cd ${TAMIL}
+      cd data/ta
       wget https://us.openslr.org/resources/65/ta_in_female.zip
       wget https://us.openslr.org/resources/65/ta_in_male.zip
 
@@ -52,11 +52,11 @@ if [ ${lang} == "ta" ]; then
       cd $workspace
   fi
 else
-  mkdir -p ${ENGLISH}
+  mkdir -p data/en
   if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
       log "sub-stage 0: Download Data to downloads"
 
-      cd ${ENGLISH}
+      cd data/en
       gdown 'https://drive.google.com/uc?id=1foS5QODqzaotn6KaSEEdaCynh-PAccOg'
 
       unzip -o english_tamil.zip
@@ -69,9 +69,9 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
     log "sub-stage 1: Preparing Data for openslr"
 
     if [ ${lang} == "ta" ]; then
-      python3 local/data_prep.py -d ${TAMIL}
+      python3 local/data_prep.py -d data/ta
     else
-      python3 local/data_prep.py -d ${ENGLISH}
+      python3 local/data_prep.py -d data/en
     fi
     utils/spk2utt_to_utt2spk.pl data/${lang}_train/spk2utt > data/${lang}_train/utt2spk
     utils/spk2utt_to_utt2spk.pl data/${lang}_dev/spk2utt > data/${lang}_dev/utt2spk
