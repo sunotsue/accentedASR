@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     tsv_path = "%s/line_index.tsv" % args.d
 
-    with open(tsv_path, "r") as inf:
+    with open(tsv_path, "r", encoding="UTF-8") as inf:
         tsv_lines = inf.readlines()
     tsv_lines = [line.strip() for line in tsv_lines]
 
@@ -86,12 +86,12 @@ if __name__ == "__main__":
         text_strs = sorted(text_strs)
         wav_scp_strs = sorted(wav_scp_strs)
         spk2utt_strs = sorted(spk2utt_strs)
-        with open(os.path.join(phase_dir, "text"), "w+") as ouf:
+        with open(os.path.join(phase_dir, "text"), "w+", encoding="UTF-8") as ouf:
             for s in text_strs:
                 ouf.write("%s\n" % s)
-        with open(os.path.join(phase_dir, "wav.scp"), "w+") as ouf:
+        with open(os.path.join(phase_dir, "wav.scp"), "w+", encoding="UTF-8") as ouf:
             for s in wav_scp_strs:
                 ouf.write("%s\n" % s)
-        with open(os.path.join(phase_dir, "spk2utt"), "w+") as ouf:
+        with open(os.path.join(phase_dir, "spk2utt"), "w+", encoding="UTF-8") as ouf:
             for s in spk2utt_strs:
                 ouf.write("%s\n" % s)
