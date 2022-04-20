@@ -1,60 +1,97 @@
-#!/bin/bash
-
-#  Apache 2.0  (http://www.apache.org/licenses/LICENSE-2.0)
-
-. ./path.sh || exit 1;
-. ./cmd.sh || exit 1;
-. ./db.sh || exit 1;
-
-# general configuration
-stage=0       # start from 0 if you need to start from data preparation
-stop_stage=1
-# inclusive, was 100
-SECONDS=0
-
-log() {
-    local fname=${BASH_SOURCE[1]##*/}
-    echo -e "$(date '+%Y-%m-%dT%H:%M:%S') (${fname}:${BASH_LINENO[0]}:${FUNCNAME[1]}) $*"
-}
+import argparse
+import os
+import random
+import re
 
 
-# Set bash to 'debug' mode, it will exit on :
-# -e 'error', -u 'undefined variable', -o ... 'error in pipeline', -x 'print commands',
-set -e
-set -u
-set -o pipefail
+def preprocess(text):
+    text = re.sub(r'\n', '', text.strip())
+    text = re.sub('[.,\/#!$%\^&\*;:{}=\-_`~()]', '', text)
+    return text.strip()
 
-. utils/parse_options.sh
 
-log "data preparation started"
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", help="downloads directory", type=str, default="downloads")
+    args = parser.parse_args()
 
-workspace=$PWD
+    tsv_path = "%s/line_index.tsv" % args.d
 
-mkdir -p ${ENGLISH}
-if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
-    log "sub-stage 0: Download Data to downloads"
+    with open(tsv_path, "r") as inf:
+        tsv_lines = inf.readlines()
+    tsv_lines = [line.strip() for line in tsv_lines]
 
-    cd ${ENGLISH}
-    gdown 'https://drive.google.com/uc?id=1foS5QODqzaotn6KaSEEdaCynh-PAccOg'
+    spk2utt = {}
+    utt2text = {}
+    for line in tsv_lines:
+        l_list = line.split("\t")
+        fid = l_list[0]
+        spk = l_list[0].split('_')[1]
+        text = l_list[1]
+        path = "%s/%s.wav" % (args.d, fid)
+        if os.path.exists(path):
+            utt2text[fid] = text
+            if spk in spk2utt:
+                spk2utt[spk].append(fid)
+            else:
+                spk2utt[spk] = [fid]
 
-    unzip -o datatang.zip
+    spks = sorted(list(spk2utt.keys()))
+    num_fids = 0
+    num_test_spks = 0
+    for spk in spks:
+        num_test_spks += 1
+        fids = sorted(list(set(spk2utt[spk])))
+        num_fids += len(fids)
+        if num_fids >= 500:
+            break
 
-    rm datatang.zip
-    mv 'Datatang-English/data/Indian English Speech Data' ./indian_english
-    rm -r Datatang-English
-    find indian_english -type f -iname "*.wav" -print0 | xargs -0 -J % mv % .
-    find indian_english -type f -iname "*.txt" -print0 | xargs -0 -J % mv % .
+    test_spks = spks[:num_test_spks]
+    train_dev_spks = spks[num_test_spks:]
+    random.Random(0).shuffle(train_dev_spks)
+    num_train = int(len(train_dev_spks) * 0.9)
+    train_spks = train_dev_spks[:num_train]
+    dev_spks = train_dev_spks[num_train:]
 
-    rm -r indian_english
-
-    for file in *; do
-      mv -- "$file" "${file//S/_}"
-    done
-
-    cd $workspace
-    python3 local/data_prep_transliterate.py -d ${ENGLISH}
-
-    find english_data -name "*.txt" -print0 | xargs rm -r
-
-fi
-
+    spks_by_phase = {"train": train_spks, "dev": dev_spks, "test": test_spks}
+    flac_dir = "%s/" % args.d
+    sr = 16000
+    for phase in spks_by_phase:
+        spks = spks_by_phase[phase]
+        text_strs = []
+        wav_scp_strs = []
+        spk2utt_strs = []
+        num_fids = 0
+        for spk in spks:
+            fids = sorted(list(set(spk2utt[spk])))
+            num_fids += len(fids)
+            if phase == "test" and num_fids > 2000:
+                curr_num_fids = num_fids - 2000
+                random.Random(1).shuffle(fids)
+                fids = fids[:curr_num_fids]
+            utts = [spk + "-" + f for f in fids]
+            utts_str = " ".join(utts)
+            spk2utt_strs.append("%s %s" % (spk, utts_str))
+            for fid, utt in zip(fids, utts):
+                cmd = "ffmpeg -i %s/%s.wav -f wav -ar %d -ab 16 -ac 1 - |" % (
+                    flac_dir,
+                    fid,
+                    sr,
+                )
+                text = preprocess(utt2text[fid])
+                text_strs.append("%s %s" % (utt, text))
+                wav_scp_strs.append("%s %s" % (utt, cmd))
+        phase_dir = "data/en_%s" % phase
+        os.makedirs(phase_dir)
+        text_strs = sorted(text_strs)
+        wav_scp_strs = sorted(wav_scp_strs)
+        spk2utt_strs = sorted(spk2utt_strs)
+        with open(os.path.join(phase_dir, "text"), "w+") as ouf:
+            for s in text_strs:
+                ouf.write("%s\n" % s)
+        with open(os.path.join(phase_dir, "wav.scp"), "w+") as ouf:
+            for s in wav_scp_strs:
+                ouf.write("%s\n" % s)
+        with open(os.path.join(phase_dir, "spk2utt"), "w+") as ouf:
+            for s in spk2utt_strs:
+                ouf.write("%s\n" % s)

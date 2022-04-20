@@ -42,24 +42,26 @@ if [ ${lang} == "te" ]; then
       wget https://us.openslr.org/resources/66/te_in_male.zip
 
       unzip -o te_in_female.zip
+      mv line_index.tsv female_line_index.tsv
       unzip -o te_in_male.zip
+      mv line_index.tsv male_line_index.tsv
 
       rm te_in_female.zip
       rm te_in_male.zip
 
-      cat te_in_female/line_index.tsv te_in_male/line_index.tsv > te_index.tsv
+      cat female_line_index.tsv male_line_index.tsv > line_index.tsv
 
       cd $workspace
   fi
 else
   mkdir -p ${ENGLISH}
   if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
-      log "sub-stage 0: Download Data to downloads"
-
+      log "sub-stage 0: Download English Data to downloads"
       cd ${ENGLISH}
-      gdown 'https://drive.google.com/uc?id=1foS5QODqzaotn6KaSEEdaCynh-PAccOg'
 
-      unzip -o english_telugu.zip
+      # gdown 'https://drive.google.com/uc?id=14LcLyORO7brZ4Z7vDCVe0tRJHmi82KU6'
+
+      unzip -o -j english_telugu.zip
       cd $workspace
   fi
 
