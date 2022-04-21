@@ -1,3 +1,6 @@
+cudnn_benchmark: false 
+cudnn_deterministic: false 
+use_amp: true 
 # network architecture
 
 # frontend related
@@ -6,7 +9,7 @@ frontend_conf:
   frontends:
     - frontend_type: s3prl
       frontend_conf:
-        upstream: hubert_large_ll60k  # Note: If the upstream is changed, please change the input_size in the preencoder.
+        upstream: wav2vec2_xlsr  # Note: If the upstream is changed, please change the input_size in the preencoder.
       download_dir: ./hub
       multilayer_feature: True
 
@@ -27,7 +30,7 @@ preencoder_conf:
 # encoder related
 encoder: conformer
 encoder_conf:
-    input_layer: conv2d
+    input_layer: conv2d2
     num_blocks: 12
     linear_units: 2048
     dropout_rate: 0.1
@@ -72,7 +75,7 @@ init: xavier_uniform
 
 # minibatch related
 batch_type: numel
-batch_bins: 10000000
+batch_bins: 2500000
 
 best_model_criterion:
 -   - valid
