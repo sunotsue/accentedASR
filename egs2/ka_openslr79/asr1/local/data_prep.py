@@ -17,7 +17,8 @@ if __name__ == "__main__":
     parser.add_argument("-d", help="downloads directory", type=str, default="downloads")
     args = parser.parse_args()
 
-    tsv_path = "%s/line_index.tsv" % args.d
+    tsv_path = "/home/ubuntu/accentedASR/egs2/ka_openslr79/line_index.tsv"
+    #tsv_path = "%s/line_index.tsv" % args.d
 
     with open(tsv_path, "r") as inf:
         tsv_lines = inf.readlines()
@@ -27,10 +28,13 @@ if __name__ == "__main__":
     utt2text = {}
     for line in tsv_lines:
         l_list = line.split("\t")
-        fid = l_list[0]
-        spk = l_list[0].split('_')[1]
+        fid = l_list[0].split('S')[1]
+        #print("FID  ",fid)
+        spk = l_list[0].split('S')[0]
+        #print("SPK  ",spk)
         text = l_list[1]
-        path = "%s/%s.wav" % (args.d, fid)
+        path = "/home/ubuntu/accentedASR/egs2/ka_openslr79/asr1/data/en/%s%s.wav" % ('G'+spk,fid)
+        print(path)
         if os.path.exists(path):
             utt2text[fid] = text
             if spk in spk2utt:
@@ -39,6 +43,7 @@ if __name__ == "__main__":
                 spk2utt[spk] = [fid]
 
     spks = sorted(list(spk2utt.keys()))
+    print(spks)
     num_fids = 0
     num_test_spks = 0
     for spk in spks:
@@ -56,7 +61,7 @@ if __name__ == "__main__":
     dev_spks = train_dev_spks[num_train:]
 
     spks_by_phase = {"train": train_spks, "dev": dev_spks, "test": test_spks}
-    flac_dir = "%s/" % args.d
+    flac_dir = "/home/ubuntu/accentedASR/egs2/ka_openslr79/asr1/data/en/" #% args.d
     sr = 16000
     for phase in spks_by_phase:
         spks = spks_by_phase[phase]
