@@ -3,6 +3,8 @@ import os
 import random
 import re
 
+# 2nd try
+
 
 def preprocess(text):
     text = re.sub(r'\n', '', text.strip())
@@ -20,7 +22,7 @@ if __name__ == "__main__":
     with open(tsv_path, "r") as inf:
         tsv_lines = inf.readlines()
     tsv_lines = [line.strip() for line in tsv_lines]
-
+    #sdf
     spk2utt = {}
     utt2text = {}
     for line in tsv_lines:
@@ -81,7 +83,7 @@ if __name__ == "__main__":
                 text = preprocess(utt2text[fid])
                 text_strs.append("%s %s" % (utt, text))
                 wav_scp_strs.append("%s %s" % (utt, cmd))
-        phase_dir = "data/te_%s" % phase
+        phase_dir = "data/en_%s" % phase
         os.makedirs(phase_dir)
         text_strs = sorted(text_strs)
         wav_scp_strs = sorted(wav_scp_strs)
