@@ -26,11 +26,11 @@ if __name__ == "__main__":
     utt2text = {}
     for line in tsv_lines:
         l_list = line.split("\t")
-        fid = l_list[0].split('-')[1]
+        fid = l_list[0]
         spk = l_list[0].split('-')[0]
         #print(spk,fid)
         text = l_list[1]
-        path = "%s/%s.wav" % (args.d, spk+'-'+fid)
+        path = "%s/%s.wav" % (args.d, fid)
         #print(path)
         if os.path.exists(path):
             utt2text[fid] = text
@@ -57,7 +57,8 @@ if __name__ == "__main__":
     dev_spks = train_dev_spks[num_train:]
 
     spks_by_phase = {"train": train_spks, "dev": dev_spks, "test": test_spks}
-    flac_dir = "%s/" % args.d
+    flac_dir = "%s" % args.d
+    print('flac_dir',flac_dir)
     sr = 16000
     for phase in spks_by_phase:
         spks = spks_by_phase[phase]
