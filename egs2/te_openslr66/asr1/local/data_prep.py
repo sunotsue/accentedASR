@@ -43,13 +43,13 @@ if __name__ == "__main__":
         num_test_spks += 1
         fids = sorted(list(set(spk2utt[spk])))
         num_fids += len(fids)
-        if num_fids >= 500:
+        if num_fids >= 1000:
             break
 
     test_spks = spks[:num_test_spks]
     train_dev_spks = spks[num_test_spks:]
     random.Random(0).shuffle(train_dev_spks)
-    num_train = int(len(train_dev_spks) * 0.9)
+    num_train = int(len(train_dev_spks) * 0.8)
     train_spks = train_dev_spks[:num_train]
     dev_spks = train_dev_spks[num_train:]
 

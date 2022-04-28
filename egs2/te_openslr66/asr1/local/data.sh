@@ -59,7 +59,7 @@ else
       log "sub-stage 0: Download English Data to downloads"
       cd ${ENGLISH}
 
-      # gdown 'https://drive.google.com/uc?id=14LcLyORO7brZ4Z7vDCVe0tRJHmi82KU6'
+      gdown 'https://drive.google.com/uc?id=14LcLyORO7brZ4Z7vDCVe0tRJHmi82KU6'
 
       unzip -o -j english_telugu.zip
       cd $workspace
